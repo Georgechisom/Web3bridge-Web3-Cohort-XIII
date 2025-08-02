@@ -2,24 +2,16 @@
 
 pragma solidity ^0.8.28;
 
-contract EmployeeManagement {
-    enum Role { Managers, NonAcademicStaff, AcademicStaff }
-    enum Status { Employed, Unemployed, Probation }
+import "../interface/Employee_interface.sol";
 
-    struct Employee {
-        uint uid;
-        address employeeAddress;
-        string name;
-        Role role;
-        Status status;
-        uint256 salary;
-    }
+contract EmployeeManagement is iEmployee_Management {
 
     Employee[] public EmployeeList;
 
-    address owner;
-
     mapping(address => Employee) public Employees;
+
+
+    address owner;
 
     uint256 private uniqueId;
     uint256 public amount;
@@ -42,29 +34,49 @@ contract EmployeeManagement {
         Employees[msg.sender] = _newEmployee;
     }
 
-    function update_salary(uint256 _amount, address _employeeAddress) external {
+    function update_salary(address _employeeAddress) external view returns (uint256 salary) {
+        
         uint256 managerAmount = 200000;
-        uint256 NonAcademicStaff = 100000;
-        uint256 AcademicStaff = 150000;
+        uint256 NonAcademicStaffAmount = 100000;
+        uint256 AcademicStaffAmount = 150000;
         
         Employee memory employee = Employees[_employeeAddress];
 
-        if (!Employee.Status.Employed) {
-            Employee.salary = managerAmount;
+        if (employee.status == Status.Employed) {
+            return employee.salary;
         }
+
+        if (employee.role == Role.Managers) {
+            return employee.salary = managerAmount;
+        }
+
+        if (employee.role == Role.NonAcademicStaff) {
+            return employee.salary = NonAcademicStaffAmount;
+        }
+
+        if (employee.role == Role.AcademicStaff) {
+            return employee.salary = AcademicStaffAmount;
+        }
+
+        revert DONT_PAY();
     }
 
-    function pay_salary(address payable _to, uint256 _amount, address _employeeAddress) external {
-        uint256 managerAmount = 200000;
-        uint256 NonAcademicStaff = 100000;
-        uint256 AcademicStaff = 150000;
+    function pay_salary(address payable _to, uint256 _amount) external {
         
-        Employee memory employee = Employees[_employeeAddress];
-
         if (owner != msg.sender) {
-            revert DONT_PAY();
+            revert Access_Denied();
         }
-        _to.transfer(_amount);
+        Employee memory employee = Employees[_to];
+
+        if (employee.status == Status.Employed) {
+            _to.transfer(_amount);
+        }
+        revert DONT_PAY();
+    }
+
+    function view_employee(address _employeeAddress) external view returns (Employee memory) {
+        Employee memory employee = Employees[_employeeAddress];
+        return employee;
     }
 
     
