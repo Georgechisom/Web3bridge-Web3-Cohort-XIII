@@ -1,6 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-require('dotenv').config();
+require("dotenv").config();
 
 const { WALLET_KEY, LISK_API_KEY, LISK_URL_KEY } = process.env;
 
@@ -9,7 +9,7 @@ const config: HardhatUserConfig = {
   networks: {
     lisk: {
       url: "https://rpc.sepolia-api.lisk.com",
-      accounts: [WALLET_KEY],
+      accounts: [`${WALLET_KEY}`],
     },
   },
   etherscan: {
