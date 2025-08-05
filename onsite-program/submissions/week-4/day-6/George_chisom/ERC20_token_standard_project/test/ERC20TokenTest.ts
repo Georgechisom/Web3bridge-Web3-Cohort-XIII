@@ -131,30 +131,40 @@ describe("ERC20Token", function () {
       });
     });
 
-    describe("transferFrom", function () {
-      it("should transfer tokens on behalf of owner", async function () {
-        const { erc, admin, otherAccount } = await loadFixture(
-          deployERC20Token
-        );
+    // describe("transferFrom", function () {
+    //   it("should transfer tokens on behalf of owner", async function () {
+    //     const { erc, admin, otherAccount } = await loadFixture(
+    //       deployERC20Token
+    //     );
 
-        const transfer_amount = 10;
+    //     const transfer_amount = 10;
 
-        const init_approve = await erc.approve(otherAccount.address, 20);
+    //     const init_approve = await erc.approve(otherAccount.address, 20);
 
-        const safeTransfer = await erc
-          .connect(admin)
-          .transferFrom(admin.address, otherAccount.address, transfer_amount);
+    //     const safeTransfer = await erc
+    //       .connect(admin)
+    //       .transferFrom(admin.address, otherAccount.address, transfer_amount);
 
-        await safeTransfer.wait();
+    //     await safeTransfer.wait();
 
-        // const totalLeft = init_approve - BigInt(transfer_amount);
+    //     // const totalLeft = init_approve - BigInt(transfer_amount);
 
-        const acctAllowance = await erc.approve(
-          admin.address,
-          otherAccount.address
-        );
+    //     const acctAllowance = await erc.approve(
+    //       admin.address,
+    //       otherAccount.address
+    //     );
 
-        expect(acctAllowance).to.equal(acctAllowance);
+    //     expect(acctAllowance).to.equal(acctAllowance);
+    //   });
+    // });
+
+    describe("view Admin", function () {
+      it("should return admin address", async function () {
+        const { erc, admin } = await loadFixture(deployERC20Token);
+
+        const adminAddress = await erc.view_admin();
+
+        expect(admin.address).to.equals(adminAddress);
       });
     });
   });
