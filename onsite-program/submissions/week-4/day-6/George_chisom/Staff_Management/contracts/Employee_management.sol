@@ -16,7 +16,7 @@ contract EmployeeManagement {
     }
 
     Employee[] public EmployeeList;
-
+ 
     address owner;
 
     mapping(address => Employee) public Employees;
@@ -42,29 +42,43 @@ contract EmployeeManagement {
         Employees[msg.sender] = _newEmployee;
     }
 
-    function update_salary(uint256 _amount, address _employeeAddress) external {
+    function update_salary(address _employeeAddress) external view {
         uint256 managerAmount = 200000;
         uint256 NonAcademicStaff = 100000;
         uint256 AcademicStaff = 150000;
         
         Employee memory employee = Employees[_employeeAddress];
 
-        if (!Employee.Status.Employed) {
-            Employee.salary = managerAmount;
+        if (employee.role == Role.Managers){
+            employee.salary == managerAmount;
+        } else if (employee.role == Role.NonAcademicStaff){
+            employee.salary == NonAcademicStaff;
+        } else {
+            employee.salary == AcademicStaff;
         }
     }
 
     function pay_salary(address payable _to, uint256 _amount, address _employeeAddress) external {
-        uint256 managerAmount = 200000;
-        uint256 NonAcademicStaff = 100000;
-        uint256 AcademicStaff = 150000;
         
         Employee memory employee = Employees[_employeeAddress];
 
         if (owner != msg.sender) {
             revert DONT_PAY();
+        }if (employee.status == Status.Employed){
+            _to.transfer(_amount);
+        } else if (employee.status == Status.Unemployed){
+            revert DONT_PAY();
+        } else if (employee.status == Status.Probation){
+            revert DONT_PAY();
         }
-        _to.transfer(_amount);
+    }
+
+    // function get_employee(address _employeeAddress) external view returns (Employee memory) {
+    //     return Employees[_employeeAddress];
+    // }
+
+    function get_all_employee() external view returns (Employee[] memory) {
+        return EmployeeList;
     }
 
     
