@@ -4,20 +4,17 @@ import hre from "hardhat";
 
 describe("EmployeeManagement", function () {
   async function deployEmployeeManagement() {
-    const [owner, otherAccount] = await hre.ethers.getSigners();
-
     const salary = 100000;
+
+    const [admin, otherAccount] = await hre.ethers.getSigners();
 
     const EmployeeManagement = await hre.ethers.getContractFactory(
       "EmployeeManagement"
     );
 
-    const employeeManagement = await EmployeeManagement.deploy(
-      owner.address,
-      salary
-    );
+    const employeeManagement = await EmployeeManagement.deploy();
 
-    return { employeeManagement, owner, otherAccount, salary };
+    return { employeeManagement, admin, otherAccount, salary };
   }
 
   describe("Register Employee", function () {
@@ -27,11 +24,11 @@ describe("EmployeeManagement", function () {
       );
 
       const employeeName = "David James";
-      const employeeRole = 1;
+      const employeeRole = 2;
 
       await employeeManagement.register_employee(
-        otherAccount.address,
         employeeName,
+        otherAccount.address,
         employeeRole
       );
 
@@ -45,18 +42,19 @@ describe("EmployeeManagement", function () {
 
   describe("Update Salary", function () {
     it("This is to update employee salary", async function () {
-      const { employeeManagement, otherAccount, salary } = await loadFixture(
+      const { employeeManagement, otherAccount } = await loadFixture(
         deployEmployeeManagement
       );
 
-      const salary = await employeeManagement.update_salary(
-        otherAccount.address,
-        salary
+      const updatedSalary = await employeeManagement.update_salary(
+        otherAccount.address
       );
 
-      await salary();
+      const employee = await employeeManagement.get_all_employee();
 
-      expect(salary).to.equal(salary);
+      const get_employee_details = employee[0];
+
+      expect(updatedSalary).to.equal(get_employee_details.salary);
     });
   });
 });
