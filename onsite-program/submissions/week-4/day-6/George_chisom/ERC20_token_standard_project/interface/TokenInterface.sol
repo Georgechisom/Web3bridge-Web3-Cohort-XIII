@@ -9,11 +9,11 @@ interface iERC20Token {
 
 	function transfer(address payable receiver, uint _amount) external returns (bool);
 
-	function allowance(address payable sender, address payable receiver) external view returns (uint);
+	function allowance(address payable owner, address payable spender) external view returns (uint);
 
-	function approve(address payable sender, uint amount) external returns(bool);
+	function approve(address payable owner, uint amount) external returns(bool);
 
-	function transferFrom(address payable sender, address payable receiver, uint amount) external returns (bool);
+	function transferFrom(address payable owner, address payable spender, uint amount) external returns (bool);
 
     function mint_token(address _minter, uint _amount) external;
 

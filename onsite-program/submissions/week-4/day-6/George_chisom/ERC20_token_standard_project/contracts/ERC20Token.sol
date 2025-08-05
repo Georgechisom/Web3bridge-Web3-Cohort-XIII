@@ -59,45 +59,45 @@ contract ERC20Token is iERC20Token {
 
     }
 
-	function allowance(address payable _sender, address payable _receiver) external onlyOwner view returns (uint) {
-        if (_sender == address(0) && _receiver == address(0)){
+	function allowance(address payable owner, address payable spender) external view returns (uint) {
+        if (owner == address(0) && spender == address(0)){
             revert Token.SENDER_OR_RECEIVER_CANNOT_BE_ZERO_ADDRESS();
         }
 
-        return allowances[_sender][_receiver];
+        return allowances[owner][spender];
 
     }
 
-	function approve(address payable _sender, uint amount) external returns(bool) {
-        if (_sender == address(0)){
+	function approve(address payable spender, uint amount) external returns(bool) {
+        if (spender == address(0)){
             revert Token.SENDER_OR_RECEIVER_CANNOT_BE_ZERO_ADDRESS();
         }
 
-        allowances[msg.sender][_sender] = amount;
+        allowances[msg.sender][spender] = amount;
 
         return true;
     }
 
-	function transferFrom(address payable _sender, address payable _receiver, uint _amount) external returns (bool) {
-        if (_sender == address(0) && _receiver == address(0)){
+	function transferFrom(address payable owner, address payable spender, uint _amount) external returns (bool) {
+        if (owner == address(0) && spender == address(0)){
 
             revert Token.SENDER_OR_RECEIVER_CANNOT_BE_ZERO_ADDRESS();
 
-        } else if (walletBalances[_sender] <= _amount) {
+        } else if (walletBalances[owner] < _amount) {
 
             revert Token.Balance_Must_Be_Greater_Amount();
 
-        } else if (_amount >= allowances[_sender][msg.sender]) {
+        } else if (_amount >= allowances[owner][msg.sender]) {
 
-            revert Token.Amount_Must_Be_Greater_Allowance();
+            revert Token.Amount_Is_Greater_Allowance();
 
         } else {
 
-            allowances[_sender][msg.sender] = allowances[_sender][msg.sender] - _amount;
+            allowances[owner][msg.sender] = allowances[owner][msg.sender] - _amount;
 
-            walletBalances[_sender] = walletBalances[_sender] - _amount;
+            walletBalances[owner] = walletBalances[owner] - _amount;
 
-            walletBalances[_receiver] = walletBalances[_receiver] + _amount;
+            walletBalances[spender] = walletBalances[spender] + _amount;
 
             return true;
 
@@ -125,7 +125,7 @@ contract ERC20Token is iERC20Token {
     }
 
     function burn_token(uint _amount) external {
-         if (walletBalances[msg.sender] >= _amount) {
+         if (walletBalances[msg.sender] <= _amount) {
 
             revert Token.Balance_Must_Be_Greater_Amount();
             
@@ -134,8 +134,8 @@ contract ERC20Token is iERC20Token {
             revert Token.Burner_Must_Be_Greater_Than_0();
 
         } else {
-            totalSupply = totalSupply - _amount;
             walletBalances[msg.sender] =  walletBalances[msg.sender] - _amount;
+            totalSupply = totalSupply - _amount;
         }
     }
 
