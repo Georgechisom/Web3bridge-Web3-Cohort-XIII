@@ -21,9 +21,6 @@ contract Web3Access {
         bool isWorking;
     }
 
-    error ACCESS_DENIED();
-
-
     Web3Staffs[] public All_Employed_Staffs;
 
     mapping (address => Web3Staffs) Total_Staff;
@@ -33,6 +30,10 @@ contract Web3Access {
     }
 
     uint private unique_id;
+
+    error ACCESS_DENIED();
+
+    error Invalid_Address();
 
     // function to add staff to data
     function add_staff (address _staff_address, string memory _name, staff _all_Staff) external {
@@ -83,18 +84,19 @@ contract Web3Access {
         All_Employed_Staffs.push(_incoming_staff);
     }
 
-    function admin_staff_dismissal(address _address, uint _uid) external {
-        if (_address != owner) {
-            revert("ACCESS_DENIED");
+    function admin_staff_dismissal(address staff_address) external {
+        if (msg.sender != owner) {
+            revert ACCESS_DENIED();
         }
         
         // Check if _uid is valid before accessing array
-        if (_uid >= All_Employed_Staffs.length) {
-            revert("INVALID_UID");
+        if (staff_address != Total_Staff[staff_address].staff_address) {
+            revert Invalid_Address();
         }
 
-        // Directly update the staff member at index _uid
-        All_Employed_Staffs[_uid].isWorking = false;
+        bool new_level = Total_Staff[staff_address].isWorking = false;
+        Total_Staff[staff_address].isWorking = new_level;
+
     }
 
     function grant_access (address _address) external view returns (bool isWorking) {
@@ -102,7 +104,7 @@ contract Web3Access {
         Web3Staffs memory _access_staff = Total_Staff[_address];
 
         if (!_access_staff.isWorking) {
-            return false;
+            return true;
         }
         if (_access_staff.all_staff == staff.mentor || _access_staff.all_staff == staff.managers || _access_staff.all_staff == staff.mediaTeam) {
             return true;

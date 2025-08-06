@@ -87,17 +87,53 @@ describe("Access Control Test", function () {
 
   describe("Admin Dismissal of staff", function () {
     it("admin should sack staff successfully", async function () {
-      const { accessControl, admin } = await loadFixture(deployAccessControl);
+      const { accessControl, otherAccount } = await loadFixture(
+        deployAccessControl
+      );
 
       const ifEmployed = false;
 
-      await accessControl.admin_staff_dismissal(admin, 0);
+      const staffName = "Felix David";
+      const staffPosition = 2;
+      const staffAddress = otherAccount.address;
 
-      const staffData = await accessControl.get_all_staff();
+      await accessControl.add_staff(staffAddress, staffName, staffPosition);
 
-      const change_employment = staffData[0].isWorking;
+      await accessControl.get_all_staff();
 
-      expect(change_employment).to.equal(ifEmployed);
+      await accessControl.admin_staff_dismissal(otherAccount.address);
+
+      const staffNewData = await accessControl.get_one_staff(
+        otherAccount.address
+      );
+
+      expect(staffNewData.isWorking).to.equal(ifEmployed);
+    });
+  });
+
+  describe("Grant Access", function () {
+    it("This is to grant access to staff", async function () {
+      const { accessControl, otherAccount } = await loadFixture(
+        deployAccessControl
+      );
+
+      const staffName = "Felix David";
+      const staffPosition = 5;
+      const staffAddress = otherAccount.address;
+      const ifEmployed = true;
+
+      await accessControl.add_staff(staffAddress, staffName, staffPosition);
+
+      await accessControl.get_all_staff();
+
+      await accessControl.grant_access(otherAccount.address);
+
+      const accessCheck = await accessControl.get_all_staff();
+
+      const staff = accessCheck[0];
+
+      expect(staff.isWorking).to.equal(ifEmployed);
+      expect(staff.all_staff).to.equal(staffPosition);
     });
   });
 });
