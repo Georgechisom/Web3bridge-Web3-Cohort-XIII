@@ -15,11 +15,21 @@ describe("ERC20Token", function () {
     return { erc, _firstSupply, admin, otherAccount };
   }
 
+  describe("Get Token Name", function () {
+    it("name of token", async function () {
+      const { erc } = await loadFixture(deployERC20Token);
+
+      const token_get_name = await erc.tokenDetails.name;
+
+      expect(token_get_name).to.equal(token_get_name);
+    });
+  });
+
   describe("total supply", function () {
     it("This is to know total amount in circulation", async function () {
       const { erc } = await loadFixture(deployERC20Token);
 
-      expect(await erc.total_supply()).to.equal(1000000000000000);
+      expect(await erc.total_supply()).to.equal(1000000000000000000n);
 
       // expect(await erc.total_supply()).to.equal(ethers.utils.parseUnits("1", 18));
     });
@@ -101,7 +111,7 @@ describe("ERC20Token", function () {
 
         const balance = await erc.balanceOf(admin.address);
 
-        expect(balance).to.equal(1000000000001000);
+        expect(balance).to.equal(1000000000000001000n);
       });
     });
 
@@ -131,33 +141,6 @@ describe("ERC20Token", function () {
       });
     });
 
-    // describe("transferFrom", function () {
-    //   it("should transfer tokens on behalf of owner", async function () {
-    //     const { erc, admin, otherAccount } = await loadFixture(
-    //       deployERC20Token
-    //     );
-
-    //     const transfer_amount = 10;
-
-    //     const init_approve = await erc.approve(otherAccount.address, 20);
-
-    //     const safeTransfer = await erc
-    //       .connect(admin)
-    //       .transferFrom(admin.address, otherAccount.address, transfer_amount);
-
-    //     await safeTransfer.wait();
-
-    //     // const totalLeft = init_approve - BigInt(transfer_amount);
-
-    //     const acctAllowance = await erc.approve(
-    //       admin.address,
-    //       otherAccount.address
-    //     );
-
-    //     expect(acctAllowance).to.equal(acctAllowance);
-    //   });
-    // });
-
     describe("view Admin", function () {
       it("should return admin address", async function () {
         const { erc, admin } = await loadFixture(deployERC20Token);
@@ -165,6 +148,46 @@ describe("ERC20Token", function () {
         const adminAddress = await erc.view_admin();
 
         expect(admin.address).to.equals(adminAddress);
+      });
+    });
+
+    describe("transferFrom", function () {
+      it("should transfer tokens on behalf of owner", async function () {
+        const { erc, admin, otherAccount } = await loadFixture(
+          deployERC20Token
+        );
+
+        const transfer_amount = 100;
+        const allow_amount = 100000;
+
+        await erc.connect(admin).mint_token(admin.address, 100000);
+
+        const init_owner_balance = await erc.balanceOf(admin.address);
+
+        const init_spender_balance = await erc.balanceOf(otherAccount.address);
+
+        await erc.connect(admin).approve(otherAccount.address, allow_amount);
+
+        const allowance = await erc.allowance(
+          admin.address,
+          otherAccount.address
+        );
+        expect(allowance).to.equal(allow_amount);
+
+        await erc
+          .connect(otherAccount)
+          .transferFrom(admin.address, otherAccount.address, transfer_amount);
+
+        const new_owner_balance = await erc.balanceOf(admin.address);
+
+        const new_spender_balance = await erc.balanceOf(otherAccount.address);
+
+        expect(new_owner_balance).to.equal(
+          init_owner_balance - BigInt(transfer_amount)
+        );
+        expect(new_spender_balance).to.equal(
+          init_spender_balance + BigInt(transfer_amount)
+        );
       });
     });
   });

@@ -46,15 +46,81 @@ describe("EmployeeManagement", function () {
         deployEmployeeManagement
       );
 
-      const updatedSalary = await employeeManagement.update_salary(
+      await employeeManagement.update_salary(otherAccount.address);
+
+      const employee = await employeeManagement.get_employee(
         otherAccount.address
       );
 
-      const employee = await employeeManagement.get_all_employee();
+      expect(employee.salary).to.equal(200000);
+    });
+  });
 
-      const get_employee_details = employee[0];
+  describe("View Employee", function () {
+    it("This is to see an employee", async function () {
+      const { employeeManagement, otherAccount } = await loadFixture(
+        deployEmployeeManagement
+      );
 
-      expect(updatedSalary).to.equal(get_employee_details.salary);
+      const employee = await employeeManagement.get_employee(
+        otherAccount.address
+      );
+
+      expect(employee).to.equal(employee);
+    });
+  });
+
+  describe("View All Employee", function () {
+    it("This is to see all employee", async function () {
+      const { employeeManagement, otherAccount } = await loadFixture(
+        deployEmployeeManagement
+      );
+
+      // Register an employee first to ensure the list is not empty
+      const employeeName = "David James";
+      const employeeRole = 2;
+      await employeeManagement.register_employee(
+        employeeName,
+        otherAccount.address,
+        employeeRole
+      );
+
+      const employees = await employeeManagement.get_all_employee();
+
+      expect(employees.length).to.be.greaterThan(0);
+      expect(employees[0].name).to.equal(employeeName);
+      expect(employees[0].employeeAddress).to.equal(otherAccount.address);
+      expect(employees[0].role).to.equal(employeeRole);
+    });
+  });
+
+  describe("Pay Salary", function () {
+    it("This is to pay employee salary", async function () {
+      const { employeeManagement, otherAccount, salary } = await loadFixture(
+        deployEmployeeManagement
+      );
+
+      // Register the employee before paying salary
+
+      const employeeNewStatus = 0;
+
+      const balance = await employeeManagement.get_balance(
+        otherAccount.address
+      );
+
+      await employeeManagement.pay_salary(otherAccount.address, salary);
+
+      const employee = await employeeManagement.get_employee(
+        otherAccount.address
+      );
+
+      const new_balance = await employeeManagement.get_balance(
+        otherAccount.address
+      );
+
+      (await employee.status) == BigInt(employeeNewStatus);
+
+      expect(new_balance).to.equal(balance + BigInt(salary));
     });
   });
 });

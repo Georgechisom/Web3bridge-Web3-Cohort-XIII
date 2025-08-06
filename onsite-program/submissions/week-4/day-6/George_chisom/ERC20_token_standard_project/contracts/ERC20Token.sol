@@ -22,7 +22,7 @@ contract ERC20Token is iERC20Token {
         
         admin = _admin;
 
-        tokenDetails = Token.TokenInfo({name: "GeorgeCoin", symbol: "GC", digits: 15});
+        tokenDetails = Token.TokenInfo({name: "GeorgeCoin", symbol: "GC", digits: 18});
 
 
         totalSupply = _firstSupply * 10 ** tokenDetails.digits;
@@ -45,7 +45,7 @@ contract ERC20Token is iERC20Token {
 
 	function transfer(address payable  _receiver, uint _amount) external returns (bool) {
 
-        if (walletBalances[msg.sender] <= _amount) {
+        if (walletBalances[msg.sender] < _amount) {
 
             revert Token.INSUFFICIENT_FUND();
 
@@ -78,31 +78,21 @@ contract ERC20Token is iERC20Token {
         return true;
     }
 
-	function transferFrom(address payable owner, address payable spender, uint _amount) external returns (bool) {
-        if (owner == address(0) && spender == address(0)){
+    function transferFrom(address payable from, address payable to, uint256 _amount) external returns (bool) {
+        require(from != address(0), "Sender cannot be zero address");
+        require(to != address(0), "Receiver cannot be zero address");
+        require(walletBalances[from] >= _amount, "Insufficient balance");
+        require(allowances[from][msg.sender] >= _amount, "Insufficient allowance");
 
-            revert Token.SENDER_OR_RECEIVER_CANNOT_BE_ZERO_ADDRESS();
+        allowances[from][msg.sender] = allowances[from][msg.sender] - _amount;
 
-        } else if (walletBalances[owner] < _amount) {
+        walletBalances[from] = walletBalances[from] - _amount;
 
-            revert Token.Balance_Must_Be_Greater_Amount();
+        walletBalances[to] = walletBalances[to] + _amount;
 
-        } else if (_amount >= allowances[owner][msg.sender]) {
-
-            revert Token.Amount_Is_Greater_Allowance();
-
-        } else {
-
-            allowances[owner][msg.sender] = allowances[owner][msg.sender] - _amount;
-
-            walletBalances[owner] = walletBalances[owner] - _amount;
-
-            walletBalances[spender] = walletBalances[spender] + _amount;
-
-            return true;
-
-        }
+        return true;
     }
+
 
     // mint function
     function mint_token(address _minter, uint _amount) external onlyOwner {

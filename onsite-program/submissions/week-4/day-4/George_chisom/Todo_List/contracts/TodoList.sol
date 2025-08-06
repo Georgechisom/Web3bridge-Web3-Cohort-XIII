@@ -32,15 +32,29 @@ contract TodoList {
 
     }
 
-    function update_todo(uint256 _index, string memory _newTittle, string memory _newDescription, address _todoAddress) external {
+    function update_todo(uint256 _index, string memory _newTittle, string memory _newDescription, address _newTodoAddress) external {
         require(_index <= Todos.length, "Invalid index");
-        TodoAddress[_todoAddress].tittle = _newTittle;
-        TodoAddress[_todoAddress].description = _newDescription;
-        TodoAddress[_todoAddress].status = false;
+        TodoAddress[_newTodoAddress].tittle = _newTittle;
+        TodoAddress[_newTodoAddress].description = _newDescription;
+        TodoAddress[_newTodoAddress].status = false;
+
+        Todo memory newTodo_ = Todo(_newTittle, _newDescription, false, level.easy, _newTodoAddress);
+
+        Todos.push(newTodo_);
     }
 
     function change_task_status(address _todoAddress) external {
-        TodoAddress[_todoAddress].status = !TodoAddress[_todoAddress].status;
+        string memory new_tittle = TodoAddress[_todoAddress].tittle;
+        string memory new_description = TodoAddress[_todoAddress].description;
+        bool new_status = !TodoAddress[_todoAddress].status;
+
+
+
+        Todo memory new_data = Todo({ tittle: new_tittle, description: new_description, status: new_status, real_level: level.easy, todoAddress: _todoAddress});
+
+        TodoAddress[_todoAddress] = new_data;
+
+
     }
 
     function show_todo() external view returns (Todo[] memory) {
