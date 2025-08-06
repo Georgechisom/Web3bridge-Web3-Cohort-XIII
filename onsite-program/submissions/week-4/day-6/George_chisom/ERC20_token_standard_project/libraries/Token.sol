@@ -26,4 +26,6 @@ library Token {
 
     error Burner_Must_Be_Greater_Than_0();
 
+    error Amount_Is_Greater_Allowance();
+
 }

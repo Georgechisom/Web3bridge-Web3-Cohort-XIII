@@ -22,7 +22,7 @@ contract ERC20Token is iERC20Token {
         
         admin = _admin;
 
-        tokenDetails = Token.TokenInfo({name: "GeorgeCoin", symbol: "GC", digits: 15});
+        tokenDetails = Token.TokenInfo({name: "GeorgeCoin", symbol: "GC", digits: 18});
 
 
         totalSupply = _firstSupply * 10 ** tokenDetails.digits;
@@ -45,7 +45,7 @@ contract ERC20Token is iERC20Token {
 
 	function transfer(address payable  _receiver, uint _amount) external returns (bool) {
 
-        if (walletBalances[msg.sender] <= _amount) {
+        if (walletBalances[msg.sender] < _amount) {
 
             revert Token.INSUFFICIENT_FUND();
 
@@ -59,50 +59,40 @@ contract ERC20Token is iERC20Token {
 
     }
 
-	function allowance(address payable _sender, address payable _receiver) external onlyOwner view returns (uint) {
-        if (_sender == address(0) && _receiver == address(0)){
+	function allowance(address payable owner, address payable spender) external view returns (uint) {
+        if (owner == address(0) && spender == address(0)){
             revert Token.SENDER_OR_RECEIVER_CANNOT_BE_ZERO_ADDRESS();
         }
 
-        return allowances[_sender][_receiver];
+        return allowances[owner][spender];
 
     }
 
-	function approve(address payable _sender, uint amount) external returns(bool) {
-        if (_sender == address(0)){
+	function approve(address payable spender, uint amount) external returns(bool) {
+        if (spender == address(0)){
             revert Token.SENDER_OR_RECEIVER_CANNOT_BE_ZERO_ADDRESS();
         }
 
-        allowances[msg.sender][_sender] = amount;
+        allowances[msg.sender][spender] = amount;
 
         return true;
     }
 
-	function transferFrom(address payable _sender, address payable _receiver, uint _amount) external returns (bool) {
-        if (_sender == address(0) && _receiver == address(0)){
+    function transferFrom(address payable from, address payable to, uint256 _amount) external returns (bool) {
+        require(from != address(0), "Sender cannot be zero address");
+        require(to != address(0), "Receiver cannot be zero address");
+        require(walletBalances[from] >= _amount, "Insufficient balance");
+        require(allowances[from][msg.sender] >= _amount, "Insufficient allowance");
 
-            revert Token.SENDER_OR_RECEIVER_CANNOT_BE_ZERO_ADDRESS();
+        allowances[from][msg.sender] = allowances[from][msg.sender] - _amount;
 
-        } else if (walletBalances[_sender] <= _amount) {
+        walletBalances[from] = walletBalances[from] - _amount;
 
-            revert Token.Balance_Must_Be_Greater_Amount();
+        walletBalances[to] = walletBalances[to] + _amount;
 
-        } else if (_amount >= allowances[_sender][msg.sender]) {
-
-            revert Token.Amount_Must_Be_Greater_Allowance();
-
-        } else {
-
-            allowances[_sender][msg.sender] = allowances[_sender][msg.sender] - _amount;
-
-            walletBalances[_sender] = walletBalances[_sender] - _amount;
-
-            walletBalances[_receiver] = walletBalances[_receiver] + _amount;
-
-            return true;
-
-        }
+        return true;
     }
+
 
     // mint function
     function mint_token(address _minter, uint _amount) external onlyOwner {
@@ -125,7 +115,7 @@ contract ERC20Token is iERC20Token {
     }
 
     function burn_token(uint _amount) external {
-         if (walletBalances[msg.sender] >= _amount) {
+         if (walletBalances[msg.sender] <= _amount) {
 
             revert Token.Balance_Must_Be_Greater_Amount();
             
@@ -134,8 +124,8 @@ contract ERC20Token is iERC20Token {
             revert Token.Burner_Must_Be_Greater_Than_0();
 
         } else {
-            totalSupply = totalSupply - _amount;
             walletBalances[msg.sender] =  walletBalances[msg.sender] - _amount;
+            totalSupply = totalSupply - _amount;
         }
     }
 
