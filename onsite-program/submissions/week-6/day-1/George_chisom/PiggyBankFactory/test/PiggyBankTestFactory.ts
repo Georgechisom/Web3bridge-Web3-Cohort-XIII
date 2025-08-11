@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { Contract, Signer } from "ethers";
-import { ContractReceipt } from "@ethersproject/contracts";
 import { AddressZero } from "@ethersproject/constants";
 import hre from "hardhat";
 
@@ -30,7 +29,7 @@ describe("ChildFactory Test", function () {
 
       // Create a PiggyBank
       const tx = await childFactory.connect(user).createPiggyBank();
-      const receipt: ContractReceipt = await tx.wait();
+      await tx.wait();
 
       // Verify PiggyBank count
       const piggyBankCountBigInt = await childFactory.getUserPiggyBankCount(
@@ -44,13 +43,12 @@ describe("ChildFactory Test", function () {
         userAddress
       );
       expect(piggyBanks[0]).to.not.equal(AddressZero);
-      expect(piggyBanks[0]).to.not.equal(ethers.AddressZero);
 
       // Verify admin of the PiggyBank
       const PiggyBank = await hre.ethers.getContractFactory("PiggyBank");
       const piggyBank = PiggyBank.attach(piggyBanks[0]);
-      const admin: string = await piggyBank.admin();
-      expect(ownerAddress).to.equal(admin);
+
+      expect(ownerAddress).to.equal(piggyBank);
     });
   });
 });

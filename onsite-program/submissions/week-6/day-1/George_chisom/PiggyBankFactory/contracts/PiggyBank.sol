@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import "../libraries/Data.sol";
 
 contract PiggyBank {
@@ -63,7 +64,7 @@ contract PiggyBank {
             }));
             userAccountCount[msg.sender]++;
         }
-        
+
         emit PiggyBankData.AccountsCreated(msg.sender, _tokens, _lockPeriods, _userNames);
     }
 

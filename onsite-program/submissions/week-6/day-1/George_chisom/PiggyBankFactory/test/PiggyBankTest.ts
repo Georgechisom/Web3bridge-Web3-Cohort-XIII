@@ -97,10 +97,11 @@ describe("PiggyBank Test", function () {
 
       // Mint 1,000,000 tokens to user to ensure sufficient balance
       const initialMint: bigint = parseUnits("1000000", 18);
-      await token.connect(user)._mint(await user.getAddress(), initialMint);
+      await token.connect(user).mint(await user.getAddress(), initialMint);
 
       // Deposit 1000 tokens
       const depositAmount: bigint = parseUnits("1000", 18);
+
       const piggyBankAddress = await piggyBank.getAddress();
       await token.connect(user).approve(piggyBankAddress, depositAmount);
       await piggyBank.connect(user).save_erc20_or_ethers(0, depositAmount);
@@ -111,15 +112,25 @@ describe("PiggyBank Test", function () {
 
       // Withdraw 500 tokens before lock period (3% fee)
       const withdrawAmount: bigint = parseUnits("500", 18);
+
       const fee: bigint = (withdrawAmount * 3n) / 100n;
+
       const toUser: bigint = withdrawAmount - fee;
+
       const ownerAddress = await owner.getAddress();
+
       const userAddress = await user.getAddress();
+
       const ownerBalanceBefore: bigint = await token.balanceOf(ownerAddress);
+
       await token.connect(user).approve(piggyBankAddress, withdrawAmount);
+
       await piggyBank.connect(user).withdraw_funds(0, withdrawAmount);
+
       [accountIds, balances] = await piggyBank.connect(user).user_balance();
+
       expect(balances[0]).to.equal(depositAmount - withdrawAmount);
+
       expect(await token.balanceOf(userAddress)).to.equal(
         initialMint - depositAmount + toUser
       );
