@@ -41,6 +41,7 @@ library Data {
     event RewardDistributed(address _to, uint256 amount);
     event RewardDistributedNft(address _to, uint256 amount, uint256 tokenId);
     event RewardDistributed1155(address _to, uint256 amount, uint256 tokenId);
+    event LootBoxCreated(address _address, address indexed user);
 
 
 }

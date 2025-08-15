@@ -3,7 +3,7 @@ import { network } from "hardhat";
 
 const { ethers } = await network.connect();
 
-describe("Counter", function () {
+describe("LootBox", function () {
   it("Should emit the Increment event when calling the inc() function", async function () {
     const counter = await ethers.deployContract("Counter");
 
@@ -22,7 +22,7 @@ describe("Counter", function () {
     const events = await counter.queryFilter(
       counter.filters.Increment(),
       deploymentBlockNumber,
-      "latest",
+      "latest"
     );
 
     // check that the aggregated events match the current value

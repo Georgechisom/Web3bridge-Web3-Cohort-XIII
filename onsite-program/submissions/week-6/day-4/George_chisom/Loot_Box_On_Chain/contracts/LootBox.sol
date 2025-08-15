@@ -121,12 +121,12 @@ contract LootBox {
     }
 
     function distributeReward(uint256 _rewardIndex, address payable _to) external onlyAdmins(admin) {
-        // Check if reward index is valid
+    
         if (_rewardIndex >= userRewards.length) {
             revert Data.Invalid_reward_parameters();
         }
         
-        // Get the reward from userRewards array
+        
         Data.Rewards memory reward = userRewards[_rewardIndex];
         
         if (reward.reward_type == Data.RewardType.ERC20) {
@@ -154,7 +154,6 @@ contract LootBox {
         allUsers[_to].push(reward);
     }
 
-    // Alternative function to distribute multiple rewards at once
     function distributeMultipleRewards(uint256[] memory _rewardIndexes, address payable _to) external onlyAdmins(admin) {
         for (uint256 i = 0; i < _rewardIndexes.length; i++) {
             uint256 rewardIndex = _rewardIndexes[i];
