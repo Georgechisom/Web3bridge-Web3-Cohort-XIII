@@ -125,7 +125,7 @@ MIT License
 
 Developed by George Chisom for Web3bridge Cohort XIII
 
-contract address 0x5FbDB2315678afecb367f032d93F642f64180aa3
+contract address 0x9D4aAB7E06564cD7F45f4F25eAFe09979782d064
 
 ---
 
