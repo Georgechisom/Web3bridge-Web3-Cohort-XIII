@@ -13,72 +13,6 @@ This project demonstrates interaction with all major Uniswap V2 Router02 functio
 - Permit-based transactions
 - All variations and edge cases
 
-## Features
-
-- **Complete Interface Coverage**: IERC20, IUniswapV2Pair, IUniswapV2Router, IUniswap
-- **Mainnet Forking**: Uses Hardhat forking to interact with real Uniswap contracts
-- **Real Token Testing**: Tests with actual USDC, DAI, and WETH
-- **Comprehensive Scripts**: 14 individual scripts covering all functions
-- **Gas Optimization**: Proper gas estimation and transaction handling
-- **Error Handling**: Robust error handling and validation
-
-## Project Structure
-
-```
-Task2_Uniswap/
-├── contracts/
-│   └── interfaces/
-│       ├── IERC20.sol
-│       ├── IUniswap.sol
-│       ├── IUniswapV2Pair.sol
-│       └── IUniswapV2Router.sol
-├── scripts/
-│   ├── 01_addLiquidity.ts
-│   ├── 02_removeLiquidity.ts
-│   ├── 03_swapExactTokensForTokens.ts
-│   ├── 04_swapTokensForExactTokens.ts
-│   ├── 05_swapExactETHForTokens.ts
-│   ├── 06_swapETHForExactTokens.ts
-│   ├── 07_swapExactTokensForETH.ts
-│   ├── 08_swapTokensForExactETH.ts
-│   ├── 09_swapExactTokensForTokensSupportingFeeOnTransferTokens.ts
-│   ├── 10_swapExactETHForTokensSupportingFeeOnTransferTokens.ts
-│   ├── 11_swapExactTokensForETHSupportingFeeOnTransferTokens.ts
-│   ├── 12_removeLiquidityETHSupportingFeeOnTransferTokens.ts
-│   ├── 13_removeLiquidityWithPermit.ts
-│   ├── 14_removeLiquidityETHWithPermit.ts
-│   └── runAllUniswapFunctions.ts
-├── screenshots/
-└── README.md
-```
-
-## Installation and Setup
-
-1. **Install Dependencies**
-
-```bash
-npm install
-```
-
-2. **Set Up Environment Variables**
-
-```bash
-cp .env.example .env
-# Edit .env with your Ethereum mainnet RPC URL
-```
-
-3. **Compile Contracts**
-
-```bash
-npm run compile
-```
-
-## Usage
-
-### Run Individual Functions
-
-**Working Scripts (Fixed Gas Issues):**
-
 ```bash
 # Liquidity Management
 npm run add-liquidity              # Add USDC/DAI liquidity
@@ -86,19 +20,10 @@ npm run remove-liquidity           # Remove USDC/DAI liquidity
 npm run add-remove-liquidity       # Complete liquidity demo
 
 # Token Swapping (All 6 swap functions)
-npm run test-all-swaps            # Test all swap functions:
-                                  # - swapExactTokensForTokens
-                                  # - swapTokensForExactTokens
-                                  # - swapExactETHForTokens
-                                  # - swapETHForExactTokens
-                                  # - swapExactTokensForETH
-                                  # - swapTokensForExactETH
+npm run test-all-swaps
 
 # Fee-on-Transfer Support (3 functions)
-npm run test-fee-functions        # Test fee-on-transfer functions:
-                                  # - swapExactTokensForTokensSupportingFeeOnTransferTokens
-                                  # - swapExactETHForTokensSupportingFeeOnTransferTokens
-                                  # - swapExactTokensForETHSupportingFeeOnTransferTokens
+npm run test-fee-functions
 
 # Run Everything
 npm run demo-all                  # Run all demos in sequence
@@ -227,24 +152,6 @@ npm run swap-exact-tokens         # Single swap function test
 ## Screenshots
 
 Take screenshots of each function execution and save them in the `screenshots/` directory with the following naming convention:
-
-```
-screenshots/
-├── 01_addLiquidity.png
-├── 02_removeLiquidity.png
-├── 03_swapExactTokensForTokens.png
-├── 04_swapTokensForExactTokens.png
-├── 05_swapExactETHForTokens.png
-├── 06_swapETHForExactTokens.png
-├── 07_swapExactTokensForETH.png
-├── 08_swapTokensForExactETH.png
-├── 09_swapExactTokensForTokensSupportingFeeOnTransferTokens.png
-├── 10_swapExactETHForTokensSupportingFeeOnTransferTokens.png
-├── 11_swapExactTokensForETHSupportingFeeOnTransferTokens.png
-├── 12_removeLiquidityETHSupportingFeeOnTransferTokens.png
-├── 13_removeLiquidityWithPermit.png
-└── 14_removeLiquidityETHWithPermit.png
-```
 
 ## Technical Notes
 
